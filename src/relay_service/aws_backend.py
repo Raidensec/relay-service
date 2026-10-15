@@ -7,6 +7,7 @@ import math
 import os
 import uuid
 from dataclasses import dataclass
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
@@ -530,4 +531,12 @@ def marshal_values(**values: Any) -> dict[str, dict[str, Any]]:
 
 
 def unmarshal(value: dict[str, dict[str, Any]]) -> dict[str, Any]:
-    return {key: deserializer.deserialize(entry) for key, entry in value.items()}
+    attributes = {
+        key: deserializer.deserialize(entry) for key, entry in value.items()
+    }
+    return {
+        key: int(attribute)
+        if isinstance(attribute, Decimal) and attribute == attribute.to_integral_value()
+        else attribute
+        for key, attribute in attributes.items()
+    }
