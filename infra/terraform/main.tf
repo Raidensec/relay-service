@@ -109,7 +109,7 @@ resource "aws_iam_role_policy" "lambda" {
       [{
         Effect   = "Allow"
         Action   = ["logs:CreateLogStream", "logs:PutLogEvents"]
-        Resource = local.log_arn
+        Resource = [local.log_arn]
       }],
       each.key == "api" ? [
         {
@@ -117,7 +117,7 @@ resource "aws_iam_role_policy" "lambda" {
           Action   = ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:TransactWriteItems", "dynamodb:Query"]
           Resource = [aws_dynamodb_table.events.arn, "${aws_dynamodb_table.events.arn}/index/*"]
         },
-        { Effect = "Allow", Action = ["sqs:SendMessage"], Resource = aws_sqs_queue.events.arn },
+        { Effect = "Allow", Action = ["sqs:SendMessage"], Resource = [aws_sqs_queue.events.arn] },
         {
           Effect   = "Allow"
           Action   = ["secretsmanager:GetSecretValue"]
@@ -128,9 +128,9 @@ resource "aws_iam_role_policy" "lambda" {
         {
           Effect   = "Allow"
           Action   = ["dynamodb:GetItem", "dynamodb:TransactWriteItems"]
-          Resource = aws_dynamodb_table.events.arn
+          Resource = [aws_dynamodb_table.events.arn]
         },
-        { Effect = "Allow", Action = ["sqs:ReceiveMessage", "sqs:DeleteMessage", "sqs:GetQueueAttributes"], Resource = aws_sqs_queue.events.arn },
+        { Effect = "Allow", Action = ["sqs:ReceiveMessage", "sqs:DeleteMessage", "sqs:GetQueueAttributes"], Resource = [aws_sqs_queue.events.arn] },
         { Effect = "Allow", Action = ["secretsmanager:GetSecretValue"], Resource = [for entry in values(var.destinations) : entry.secret_arn] }
       ] : [],
       each.key == "reconciler" ? [
@@ -139,7 +139,7 @@ resource "aws_iam_role_policy" "lambda" {
           Action   = ["dynamodb:Query", "dynamodb:UpdateItem"]
           Resource = [aws_dynamodb_table.events.arn, "${aws_dynamodb_table.events.arn}/index/state-available-index"]
         },
-        { Effect = "Allow", Action = ["sqs:SendMessage"], Resource = aws_sqs_queue.events.arn }
+        { Effect = "Allow", Action = ["sqs:SendMessage"], Resource = [aws_sqs_queue.events.arn] }
       ] : []
     )
   })
