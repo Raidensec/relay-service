@@ -167,7 +167,7 @@ def enqueue_event(client: Any, sqs: Any, event: dict[str, Any], now: int) -> boo
                 separators=(",", ":"),
             ),
         )
-    except BotoCoreError:
+    except (BotoCoreError, ClientError):
         release_enqueue(client, event, token)
         raise
     mark_enqueued(client, event, token, now)

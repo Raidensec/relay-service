@@ -9,7 +9,7 @@ import time
 from typing import Any
 
 import boto3
-from botocore.exceptions import BotoCoreError
+from botocore.exceptions import BotoCoreError, ClientError
 
 from relay_service.aws_backend import (
     EventClaimRequest,
@@ -55,7 +55,7 @@ def api_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
         return api_response(404, {"error": "not found"})
     except RequestError as exc:
         return api_response(exc.status, {"error": exc.message})
-    except BotoCoreError as exc:
+    except (BotoCoreError, ClientError) as exc:
         logger.error("AWS API operation failed: %s", type(exc).__name__)
         return api_response(503, {"error": "service temporarily unavailable"})
 
@@ -114,7 +114,7 @@ def worker_handler(event: dict[str, Any], context: Any) -> dict[str, list[dict[s
             raise ValueError("SQS record is missing messageId")
         try:
             completed = process_queue_record(record, dynamodb, settings)
-        except BotoCoreError as exc:
+        except (BotoCoreError, ClientError) as exc:
             logger.error("AWS worker operation failed: %s", type(exc).__name__)
             completed = False
         if not completed:
