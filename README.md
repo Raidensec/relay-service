@@ -168,7 +168,7 @@ The SQS visibility timeout defaults to 210 seconds for a 30-second worker Lambda
 
 ## CI and local checks
 
-The GitHub Actions workflow runs Ruff, the local behavior test, and the AWS-handler integration checks against the pinned Floci container, plus dependency auditing, secret scanning, and Lambda packaging. The emulator check calls Lambda handlers directly and is not a Lambda runtime or AWS deployment check. Terraform checks require the Terraform CLI and a built Lambda ZIP; an offline plan uses no AWS account. No AWS deployment or live AWS validation is claimed.
+The GitHub Actions workflow runs Ruff, the behavior and Floci integration tests against the pinned emulator, dependency auditing, secret scanning, and Lambda packaging. After building the ZIP, it uses Terraform CLI 1.16.6 to check formatting, initialize without a backend using the committed provider lock file in read-only mode, validate the configuration, and create an offline plan from `infra/terraform/terraform.tfvars.example` with refresh disabled. Initialization downloads the locked provider from the Terraform registry; the plan uses fake provider credentials from `offline_plan = true` and makes no AWS API calls or use of real AWS credentials. The emulator checks call Lambda handlers directly, not a Lambda runtime or AWS deployment. CI does not deploy to AWS or claim live AWS validation.
 
 ## Operations
 
