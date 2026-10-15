@@ -1,0 +1,12 @@
+aws_region       = "us-east-1"
+aws_account_id   = "000000000000"
+offline_plan     = true
+ingress_secret_arn  = "arn:aws:secretsmanager:us-east-1:000000000000:secret:relay-ingress-placeholder"
+operator_secret_arn = "arn:aws:secretsmanager:us-east-1:000000000000:secret:relay-operator-placeholder"
+
+destinations = {
+  demo = {
+    url        = "https://receiver.example.invalid/webhook"
+    secret_arn = "arn:aws:secretsmanager:us-east-1:000000000000:secret:relay-demo-placeholder"
+  }
+}
